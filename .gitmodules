@@ -1,0 +1,3 @@
+[submodule "vendor/multicodec"]
+	path = vendor/multicodec
+	url = https://github.com/multiformats/multicodec
