@@ -8,7 +8,7 @@ This library provides OCaml values and types derived from the
 # #require "multicodec";;
 ```
 
-Multicodec is an agreed upon codec table, essentially providing a means to 
+Multicodec is an agreed upon codec table, essentially providing a means to
 encode some value as a number. For example, a number for hashes that are
 generated with SHA256.
 
@@ -27,3 +27,6 @@ Other encoded values include common addressing schemes, such as DNS.
 # Multicodec.multiaddr_to_code `Dns;;
 - : int = 53
 ```
+
+Find out more about multicodec at the [multiformats
+websites](https://multiformats.io).
