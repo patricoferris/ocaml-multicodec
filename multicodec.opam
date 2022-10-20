@@ -9,6 +9,7 @@ homepage: "https://github.com/patricoferris/ocaml-multicodec"
 bug-reports: "https://github.com/patricoferris/ocaml-multicodec/issues"
 depends: [
   "dune" {>= "2.9"}
+  "mdx"  {with-test}
   "odoc" {with-doc}
 ]
 build: [
