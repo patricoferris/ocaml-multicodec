@@ -1,5 +1,18 @@
 type cid = [ `Cidv1 | `Cidv2 | `Cidv3 ]
+type encryption = [ `Aes_gcm_256 ]
 type filecoin = [ `Fil_commitment_unsealed | `Fil_commitment_sealed ]
+
+type hash =
+  [ `Murmur3_x64_64
+  | `Murmur3_32
+  | `Crc32
+  | `Crc64_ecma
+  | `Murmur3_x64_128
+  | `Sha256a
+  | `Xxh_32
+  | `Xxh_64
+  | `Xxh3_64
+  | `Xxh3_128 ]
 
 type holochain =
   [ `Holochain_adr_v0
@@ -33,7 +46,7 @@ type ipld =
   | `Eth_account_snapshot
   | `Eth_storage_trie
   | `Eth_receipt_log_trie
-  | `Eth_reciept_log
+  | `Eth_receipt_log
   | `Bitcoin_block
   | `Bitcoin_tx
   | `Bitcoin_witness_commitment
@@ -51,7 +64,7 @@ type ipld =
   | `Dag_json
   | `Swhid_1_snp
   | `Json
-  | `Urdca_2015_canon
+  | `Rdfc_1
   | `Json_jcs ]
 
 type key =
@@ -66,6 +79,7 @@ type key =
   | `X25519_pub
   | `Ed25519_pub
   | `Bls12_381_g1g2_pub
+  | `Sr25519_pub
   | `P256_pub
   | `P384_pub
   | `P521_pub
@@ -76,7 +90,15 @@ type key =
   | `Ed25519_priv
   | `Secp256k1_priv
   | `X25519_priv
-  | `Rsa_priv ]
+  | `Sr25519_priv
+  | `Rsa_priv
+  | `P256_priv
+  | `P384_priv
+  | `P521_priv
+  | `Bls12_381_g1_priv
+  | `Bls12_381_g2_priv
+  | `Bls12_381_g1g2_priv
+  | `Jwk_jcs_pub ]
 
 type libp2p = [ `Libp2p_peer_record | `Libp2p_relay_rsvp | `Memorytransport ]
 
@@ -96,6 +118,7 @@ type multiaddr =
   | `P2p_webrtc_star
   | `P2p_webrtc_direct
   | `P2p_stardust
+  | `Webrtc_direct
   | `Webrtc
   | `P2p_circuit
   | `Udt
@@ -111,7 +134,9 @@ type multiaddr =
   | `Tls
   | `Sni
   | `Noise
+  | `Shs
   | `Quic
+  | `Quic_v1
   | `Webtransport
   | `Certhash
   | `Ws
@@ -119,10 +144,17 @@ type multiaddr =
   | `P2p_websocket_star
   | `Http
   | `Silverpine
-  | `Plaintextv2 ]
+  | `Plaintextv2
+  | `Scion ]
 
 type multiformat =
-  [ `Multicodec | `Multihash | `Multiaddr | `Multibase | `Caip_50 ]
+  [ `Multicodec
+  | `Multihash
+  | `Multiaddr
+  | `Multibase
+  | `Varsig
+  | `Caip_50
+  | `Multidid ]
 
 type multihash =
   [ `Identity
@@ -141,8 +173,6 @@ type multihash =
   | `Keccak_512
   | `Blake3
   | `Sha2_384
-  | `Murmur3_x64_64
-  | `Murmur3_32
   | `Dbl_sha2_256
   | `Md4
   | `Md5
@@ -150,7 +180,6 @@ type multihash =
   | `Sha2_224
   | `Sha2_512_224
   | `Sha2_512_256
-  | `Murmur3_x64_128
   | `Ripemd_128
   | `Ripemd_160
   | `Ripemd_256
@@ -484,6 +513,7 @@ type multihash =
 
 type namespace =
   [ `Path
+  | `Lbry
   | `Streamid
   | `Ipld
   | `Swarm
@@ -501,15 +531,20 @@ type serialization =
   | `Bencode
   | `Messagepack
   | `Car
+  | `Ipns_record
   | `Car_index_sorted
   | `Car_multihash_index_sorted
   | `Ssz ]
 
 type softhash = [ `Iscc ]
-type transport = [ `Transport_bitswap | `Transport_graphsync_filecoinv1 ]
+
+type transport =
+  [ `Transport_bitswap
+  | `Transport_graphsync_filecoinv1
+  | `Transport_ipfs_gateway_http ]
 
 type varsig =
-  [ `Varsig
+  [ `Nonstandard_sig
   | `Es256k
   | `Bls_12381_g1_sig
   | `Bls_12381_g2_sig
@@ -524,7 +559,9 @@ type zeroxcert = [ `Zeroxcert_imprint_256 ]
 
 type t =
   [ cid
+  | encryption
   | filecoin
+  | hash
   | holochain
   | ipld
   | key
@@ -540,7 +577,9 @@ type t =
   | zeroxcert ]
 
 val cid_to_code : cid -> int
+val encryption_to_code : encryption -> int
 val filecoin_to_code : filecoin -> int
+val hash_to_code : hash -> int
 val holochain_to_code : holochain -> int
 val ipld_to_code : ipld -> int
 val key_to_code : key -> int
@@ -556,7 +595,9 @@ val varsig_to_code : varsig -> int
 val zeroxcert_to_code : zeroxcert -> int
 val to_code : t -> int
 val cid_of_code : int -> cid option
+val encryption_of_code : int -> encryption option
 val filecoin_of_code : int -> filecoin option
+val hash_of_code : int -> hash option
 val holochain_of_code : int -> holochain option
 val ipld_of_code : int -> ipld option
 val key_of_code : int -> key option
@@ -572,7 +613,9 @@ val varsig_of_code : int -> varsig option
 val zeroxcert_of_code : int -> zeroxcert option
 val of_code : int -> t option
 val cid_to_string : cid -> string
+val encryption_to_string : encryption -> string
 val filecoin_to_string : filecoin -> string
+val hash_to_string : hash -> string
 val holochain_to_string : holochain -> string
 val ipld_to_string : ipld -> string
 val key_to_string : key -> string
@@ -588,7 +631,9 @@ val varsig_to_string : varsig -> string
 val zeroxcert_to_string : zeroxcert -> string
 val to_string : t -> string
 val cid_of_string : string -> cid option
+val encryption_of_string : string -> encryption option
 val filecoin_of_string : string -> filecoin option
+val hash_of_string : string -> hash option
 val holochain_of_string : string -> holochain option
 val ipld_of_string : string -> ipld option
 val key_of_string : string -> key option
