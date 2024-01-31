@@ -1,5 +1,18 @@
 type cid = [ `Cidv1 | `Cidv2 | `Cidv3 ]
+type encryption = [ `Aes_gcm_256 ]
 type filecoin = [ `Fil_commitment_unsealed | `Fil_commitment_sealed ]
+
+type hash =
+  [ `Murmur3_x64_64
+  | `Murmur3_32
+  | `Crc32
+  | `Crc64_ecma
+  | `Murmur3_x64_128
+  | `Sha256a
+  | `Xxh_32
+  | `Xxh_64
+  | `Xxh3_64
+  | `Xxh3_128 ]
 
 type holochain =
   [ `Holochain_adr_v0
@@ -33,7 +46,7 @@ type ipld =
   | `Eth_account_snapshot
   | `Eth_storage_trie
   | `Eth_receipt_log_trie
-  | `Eth_reciept_log
+  | `Eth_receipt_log
   | `Bitcoin_block
   | `Bitcoin_tx
   | `Bitcoin_witness_commitment
@@ -51,7 +64,7 @@ type ipld =
   | `Dag_json
   | `Swhid_1_snp
   | `Json
-  | `Urdca_2015_canon
+  | `Rdfc_1
   | `Json_jcs ]
 
 type key =
@@ -66,6 +79,7 @@ type key =
   | `X25519_pub
   | `Ed25519_pub
   | `Bls12_381_g1g2_pub
+  | `Sr25519_pub
   | `P256_pub
   | `P384_pub
   | `P521_pub
@@ -76,7 +90,15 @@ type key =
   | `Ed25519_priv
   | `Secp256k1_priv
   | `X25519_priv
-  | `Rsa_priv ]
+  | `Sr25519_priv
+  | `Rsa_priv
+  | `P256_priv
+  | `P384_priv
+  | `P521_priv
+  | `Bls12_381_g1_priv
+  | `Bls12_381_g2_priv
+  | `Bls12_381_g1g2_priv
+  | `Jwk_jcs_pub ]
 
 type libp2p = [ `Libp2p_peer_record | `Libp2p_relay_rsvp | `Memorytransport ]
 
@@ -96,6 +118,7 @@ type multiaddr =
   | `P2p_webrtc_star
   | `P2p_webrtc_direct
   | `P2p_stardust
+  | `Webrtc_direct
   | `Webrtc
   | `P2p_circuit
   | `Udt
@@ -111,7 +134,9 @@ type multiaddr =
   | `Tls
   | `Sni
   | `Noise
+  | `Shs
   | `Quic
+  | `Quic_v1
   | `Webtransport
   | `Certhash
   | `Ws
@@ -119,10 +144,17 @@ type multiaddr =
   | `P2p_websocket_star
   | `Http
   | `Silverpine
-  | `Plaintextv2 ]
+  | `Plaintextv2
+  | `Scion ]
 
 type multiformat =
-  [ `Multicodec | `Multihash | `Multiaddr | `Multibase | `Caip_50 ]
+  [ `Multicodec
+  | `Multihash
+  | `Multiaddr
+  | `Multibase
+  | `Varsig
+  | `Caip_50
+  | `Multidid ]
 
 type multihash =
   [ `Identity
@@ -141,8 +173,6 @@ type multihash =
   | `Keccak_512
   | `Blake3
   | `Sha2_384
-  | `Murmur3_x64_64
-  | `Murmur3_32
   | `Dbl_sha2_256
   | `Md4
   | `Md5
@@ -150,7 +180,6 @@ type multihash =
   | `Sha2_224
   | `Sha2_512_224
   | `Sha2_512_256
-  | `Murmur3_x64_128
   | `Ripemd_128
   | `Ripemd_160
   | `Ripemd_256
@@ -484,6 +513,7 @@ type multihash =
 
 type namespace =
   [ `Path
+  | `Lbry
   | `Streamid
   | `Ipld
   | `Swarm
@@ -501,15 +531,20 @@ type serialization =
   | `Bencode
   | `Messagepack
   | `Car
+  | `Ipns_record
   | `Car_index_sorted
   | `Car_multihash_index_sorted
   | `Ssz ]
 
 type softhash = [ `Iscc ]
-type transport = [ `Transport_bitswap | `Transport_graphsync_filecoinv1 ]
+
+type transport =
+  [ `Transport_bitswap
+  | `Transport_graphsync_filecoinv1
+  | `Transport_ipfs_gateway_http ]
 
 type varsig =
-  [ `Varsig
+  [ `Nonstandard_sig
   | `Es256k
   | `Bls_12381_g1_sig
   | `Bls_12381_g2_sig
@@ -524,7 +559,9 @@ type zeroxcert = [ `Zeroxcert_imprint_256 ]
 
 type t =
   [ cid
+  | encryption
   | filecoin
+  | hash
   | holochain
   | ipld
   | key
@@ -540,10 +577,23 @@ type t =
   | zeroxcert ]
 
 let cid_to_code = function `Cidv1 -> 0x01 | `Cidv2 -> 0x02 | `Cidv3 -> 0x03
+let encryption_to_code = function `Aes_gcm_256 -> 0x2000
 
 let filecoin_to_code = function
   | `Fil_commitment_unsealed -> 0xf101
   | `Fil_commitment_sealed -> 0xf102
+
+let hash_to_code = function
+  | `Murmur3_x64_64 -> 0x22
+  | `Murmur3_32 -> 0x23
+  | `Crc32 -> 0x0132
+  | `Crc64_ecma -> 0x0164
+  | `Murmur3_x64_128 -> 0x1022
+  | `Sha256a -> 0x7012
+  | `Xxh_32 -> 0xb3e1
+  | `Xxh_64 -> 0xb3e2
+  | `Xxh3_64 -> 0xb3e3
+  | `Xxh3_128 -> 0xb3e4
 
 let holochain_to_code = function
   | `Holochain_adr_v0 -> 0x807124
@@ -577,7 +627,7 @@ let ipld_to_code = function
   | `Eth_account_snapshot -> 0x97
   | `Eth_storage_trie -> 0x98
   | `Eth_receipt_log_trie -> 0x99
-  | `Eth_reciept_log -> 0x9a
+  | `Eth_receipt_log -> 0x9a
   | `Bitcoin_block -> 0xb0
   | `Bitcoin_tx -> 0xb1
   | `Bitcoin_witness_commitment -> 0xb2
@@ -595,7 +645,7 @@ let ipld_to_code = function
   | `Dag_json -> 0x0129
   | `Swhid_1_snp -> 0x01f0
   | `Json -> 0x0200
-  | `Urdca_2015_canon -> 0xb403
+  | `Rdfc_1 -> 0xb403
   | `Json_jcs -> 0xb601
 
 let key_to_code = function
@@ -610,6 +660,7 @@ let key_to_code = function
   | `X25519_pub -> 0xec
   | `Ed25519_pub -> 0xed
   | `Bls12_381_g1g2_pub -> 0xee
+  | `Sr25519_pub -> 0xef
   | `P256_pub -> 0x1200
   | `P384_pub -> 0x1201
   | `P521_pub -> 0x1202
@@ -620,7 +671,15 @@ let key_to_code = function
   | `Ed25519_priv -> 0x1300
   | `Secp256k1_priv -> 0x1301
   | `X25519_priv -> 0x1302
+  | `Sr25519_priv -> 0x1303
   | `Rsa_priv -> 0x1305
+  | `P256_priv -> 0x1306
+  | `P384_priv -> 0x1307
+  | `P521_priv -> 0x1308
+  | `Bls12_381_g1_priv -> 0x1309
+  | `Bls12_381_g2_priv -> 0x130a
+  | `Bls12_381_g1g2_priv -> 0x130b
+  | `Jwk_jcs_pub -> 0xeb51
 
 let libp2p_to_code = function
   | `Libp2p_peer_record -> 0x0301
@@ -643,7 +702,8 @@ let multiaddr_to_code = function
   | `P2p_webrtc_star -> 0x0113
   | `P2p_webrtc_direct -> 0x0114
   | `P2p_stardust -> 0x0115
-  | `Webrtc -> 0x0118
+  | `Webrtc_direct -> 0x0118
+  | `Webrtc -> 0x0119
   | `P2p_circuit -> 0x0122
   | `Udt -> 0x012d
   | `Utp -> 0x012e
@@ -658,7 +718,9 @@ let multiaddr_to_code = function
   | `Tls -> 0x01c0
   | `Sni -> 0x01c1
   | `Noise -> 0x01c6
+  | `Shs -> 0x01c8
   | `Quic -> 0x01cc
+  | `Quic_v1 -> 0x01cd
   | `Webtransport -> 0x01d1
   | `Certhash -> 0x01d2
   | `Ws -> 0x01dd
@@ -667,13 +729,16 @@ let multiaddr_to_code = function
   | `Http -> 0x01e0
   | `Silverpine -> 0x3f42
   | `Plaintextv2 -> 0x706c61
+  | `Scion -> 0xd02000
 
 let multiformat_to_code = function
   | `Multicodec -> 0x30
   | `Multihash -> 0x31
   | `Multiaddr -> 0x32
   | `Multibase -> 0x33
+  | `Varsig -> 0x34
   | `Caip_50 -> 0xca
+  | `Multidid -> 0x0d1d
 
 let multihash_to_code = function
   | `Identity -> 0x00
@@ -692,8 +757,6 @@ let multihash_to_code = function
   | `Keccak_512 -> 0x1d
   | `Blake3 -> 0x1e
   | `Sha2_384 -> 0x20
-  | `Murmur3_x64_64 -> 0x22
-  | `Murmur3_32 -> 0x23
   | `Dbl_sha2_256 -> 0x56
   | `Md4 -> 0xd4
   | `Md5 -> 0xd5
@@ -701,7 +764,6 @@ let multihash_to_code = function
   | `Sha2_224 -> 0x1013
   | `Sha2_512_224 -> 0x1014
   | `Sha2_512_256 -> 0x1015
-  | `Murmur3_x64_128 -> 0x1022
   | `Ripemd_128 -> 0x1052
   | `Ripemd_160 -> 0x1053
   | `Ripemd_256 -> 0x1054
@@ -1035,6 +1097,7 @@ let multihash_to_code = function
 
 let namespace_to_code = function
   | `Path -> 0x2f
+  | `Lbry -> 0x8c
   | `Streamid -> 0xce
   | `Ipld -> 0xe2
   | `Swarm -> 0xe4
@@ -1052,6 +1115,7 @@ let serialization_to_code = function
   | `Bencode -> 0x63
   | `Messagepack -> 0x0201
   | `Car -> 0x0202
+  | `Ipns_record -> 0x0300
   | `Car_index_sorted -> 0x0400
   | `Car_multihash_index_sorted -> 0x0401
   | `Ssz -> 0xb501
@@ -1061,9 +1125,10 @@ let softhash_to_code = function `Iscc -> 0xcc01
 let transport_to_code = function
   | `Transport_bitswap -> 0x0900
   | `Transport_graphsync_filecoinv1 -> 0x0910
+  | `Transport_ipfs_gateway_http -> 0x0920
 
 let varsig_to_code = function
-  | `Varsig -> 0xd000
+  | `Nonstandard_sig -> 0xd000
   | `Es256k -> 0xd0e7
   | `Bls_12381_g1_sig -> 0xd0ea
   | `Bls_12381_g2_sig -> 0xd0eb
@@ -1078,7 +1143,9 @@ let zeroxcert_to_code = function `Zeroxcert_imprint_256 -> 0xce11
 
 let to_code : t -> int = function
   | #cid as x -> cid_to_code x
+  | #encryption as x -> encryption_to_code x
   | #filecoin as x -> filecoin_to_code x
+  | #hash as x -> hash_to_code x
   | #holochain as x -> holochain_to_code x
   | #ipld as x -> ipld_to_code x
   | #key as x -> key_to_code x
@@ -1099,9 +1166,24 @@ let cid_of_code = function
   | 0x03 -> Some `Cidv3
   | _ -> None
 
+let encryption_of_code = function 0x2000 -> Some `Aes_gcm_256 | _ -> None
+
 let filecoin_of_code = function
   | 0xf101 -> Some `Fil_commitment_unsealed
   | 0xf102 -> Some `Fil_commitment_sealed
+  | _ -> None
+
+let hash_of_code = function
+  | 0x22 -> Some `Murmur3_x64_64
+  | 0x23 -> Some `Murmur3_32
+  | 0x0132 -> Some `Crc32
+  | 0x0164 -> Some `Crc64_ecma
+  | 0x1022 -> Some `Murmur3_x64_128
+  | 0x7012 -> Some `Sha256a
+  | 0xb3e1 -> Some `Xxh_32
+  | 0xb3e2 -> Some `Xxh_64
+  | 0xb3e3 -> Some `Xxh3_64
+  | 0xb3e4 -> Some `Xxh3_128
   | _ -> None
 
 let holochain_of_code = function
@@ -1137,7 +1219,7 @@ let ipld_of_code = function
   | 0x97 -> Some `Eth_account_snapshot
   | 0x98 -> Some `Eth_storage_trie
   | 0x99 -> Some `Eth_receipt_log_trie
-  | 0x9a -> Some `Eth_reciept_log
+  | 0x9a -> Some `Eth_receipt_log
   | 0xb0 -> Some `Bitcoin_block
   | 0xb1 -> Some `Bitcoin_tx
   | 0xb2 -> Some `Bitcoin_witness_commitment
@@ -1155,7 +1237,7 @@ let ipld_of_code = function
   | 0x0129 -> Some `Dag_json
   | 0x01f0 -> Some `Swhid_1_snp
   | 0x0200 -> Some `Json
-  | 0xb403 -> Some `Urdca_2015_canon
+  | 0xb403 -> Some `Rdfc_1
   | 0xb601 -> Some `Json_jcs
   | _ -> None
 
@@ -1171,6 +1253,7 @@ let key_of_code = function
   | 0xec -> Some `X25519_pub
   | 0xed -> Some `Ed25519_pub
   | 0xee -> Some `Bls12_381_g1g2_pub
+  | 0xef -> Some `Sr25519_pub
   | 0x1200 -> Some `P256_pub
   | 0x1201 -> Some `P384_pub
   | 0x1202 -> Some `P521_pub
@@ -1181,7 +1264,15 @@ let key_of_code = function
   | 0x1300 -> Some `Ed25519_priv
   | 0x1301 -> Some `Secp256k1_priv
   | 0x1302 -> Some `X25519_priv
+  | 0x1303 -> Some `Sr25519_priv
   | 0x1305 -> Some `Rsa_priv
+  | 0x1306 -> Some `P256_priv
+  | 0x1307 -> Some `P384_priv
+  | 0x1308 -> Some `P521_priv
+  | 0x1309 -> Some `Bls12_381_g1_priv
+  | 0x130a -> Some `Bls12_381_g2_priv
+  | 0x130b -> Some `Bls12_381_g1g2_priv
+  | 0xeb51 -> Some `Jwk_jcs_pub
   | _ -> None
 
 let libp2p_of_code = function
@@ -1206,7 +1297,8 @@ let multiaddr_of_code = function
   | 0x0113 -> Some `P2p_webrtc_star
   | 0x0114 -> Some `P2p_webrtc_direct
   | 0x0115 -> Some `P2p_stardust
-  | 0x0118 -> Some `Webrtc
+  | 0x0118 -> Some `Webrtc_direct
+  | 0x0119 -> Some `Webrtc
   | 0x0122 -> Some `P2p_circuit
   | 0x012d -> Some `Udt
   | 0x012e -> Some `Utp
@@ -1221,7 +1313,9 @@ let multiaddr_of_code = function
   | 0x01c0 -> Some `Tls
   | 0x01c1 -> Some `Sni
   | 0x01c6 -> Some `Noise
+  | 0x01c8 -> Some `Shs
   | 0x01cc -> Some `Quic
+  | 0x01cd -> Some `Quic_v1
   | 0x01d1 -> Some `Webtransport
   | 0x01d2 -> Some `Certhash
   | 0x01dd -> Some `Ws
@@ -1230,6 +1324,7 @@ let multiaddr_of_code = function
   | 0x01e0 -> Some `Http
   | 0x3f42 -> Some `Silverpine
   | 0x706c61 -> Some `Plaintextv2
+  | 0xd02000 -> Some `Scion
   | _ -> None
 
 let multiformat_of_code = function
@@ -1237,7 +1332,9 @@ let multiformat_of_code = function
   | 0x31 -> Some `Multihash
   | 0x32 -> Some `Multiaddr
   | 0x33 -> Some `Multibase
+  | 0x34 -> Some `Varsig
   | 0xca -> Some `Caip_50
+  | 0x0d1d -> Some `Multidid
   | _ -> None
 
 let multihash_of_code = function
@@ -1257,8 +1354,6 @@ let multihash_of_code = function
   | 0x1d -> Some `Keccak_512
   | 0x1e -> Some `Blake3
   | 0x20 -> Some `Sha2_384
-  | 0x22 -> Some `Murmur3_x64_64
-  | 0x23 -> Some `Murmur3_32
   | 0x56 -> Some `Dbl_sha2_256
   | 0xd4 -> Some `Md4
   | 0xd5 -> Some `Md5
@@ -1266,7 +1361,6 @@ let multihash_of_code = function
   | 0x1013 -> Some `Sha2_224
   | 0x1014 -> Some `Sha2_512_224
   | 0x1015 -> Some `Sha2_512_256
-  | 0x1022 -> Some `Murmur3_x64_128
   | 0x1052 -> Some `Ripemd_128
   | 0x1053 -> Some `Ripemd_160
   | 0x1054 -> Some `Ripemd_256
@@ -1601,6 +1695,7 @@ let multihash_of_code = function
 
 let namespace_of_code = function
   | 0x2f -> Some `Path
+  | 0x8c -> Some `Lbry
   | 0xce -> Some `Streamid
   | 0xe2 -> Some `Ipld
   | 0xe4 -> Some `Swarm
@@ -1619,6 +1714,7 @@ let serialization_of_code = function
   | 0x63 -> Some `Bencode
   | 0x0201 -> Some `Messagepack
   | 0x0202 -> Some `Car
+  | 0x0300 -> Some `Ipns_record
   | 0x0400 -> Some `Car_index_sorted
   | 0x0401 -> Some `Car_multihash_index_sorted
   | 0xb501 -> Some `Ssz
@@ -1629,10 +1725,11 @@ let softhash_of_code = function 0xcc01 -> Some `Iscc | _ -> None
 let transport_of_code = function
   | 0x0900 -> Some `Transport_bitswap
   | 0x0910 -> Some `Transport_graphsync_filecoinv1
+  | 0x0920 -> Some `Transport_ipfs_gateway_http
   | _ -> None
 
 let varsig_of_code = function
-  | 0xd000 -> Some `Varsig
+  | 0xd000 -> Some `Nonstandard_sig
   | 0xd0e7 -> Some `Es256k
   | 0xd0ea -> Some `Bls_12381_g1_sig
   | 0xd0eb -> Some `Bls_12381_g2_sig
@@ -1681,6 +1778,7 @@ let of_code : int -> t option = function
   | 0x31 -> Some `Multihash
   | 0x32 -> Some `Multiaddr
   | 0x33 -> Some `Multibase
+  | 0x34 -> Some `Varsig
   | 0x35 -> Some `Dns
   | 0x36 -> Some `Dns4
   | 0x37 -> Some `Dns6
@@ -1703,6 +1801,7 @@ let of_code : int -> t option = function
   | 0x84 -> Some `Sctp
   | 0x85 -> Some `Dag_jose
   | 0x86 -> Some `Dag_cose
+  | 0x8c -> Some `Lbry
   | 0x90 -> Some `Eth_block
   | 0x91 -> Some `Eth_block_list
   | 0x92 -> Some `Eth_tx_trie
@@ -1713,7 +1812,7 @@ let of_code : int -> t option = function
   | 0x97 -> Some `Eth_account_snapshot
   | 0x98 -> Some `Eth_storage_trie
   | 0x99 -> Some `Eth_receipt_log_trie
-  | 0x9a -> Some `Eth_reciept_log
+  | 0x9a -> Some `Eth_receipt_log
   | 0xa0 -> Some `Aes_128
   | 0xa1 -> Some `Aes_192
   | 0xa2 -> Some `Aes_256
@@ -1743,6 +1842,7 @@ let of_code : int -> t option = function
   | 0xec -> Some `X25519_pub
   | 0xed -> Some `Ed25519_pub
   | 0xee -> Some `Bls12_381_g1g2_pub
+  | 0xef -> Some `Sr25519_pub
   | 0xf0 -> Some `Dash_block
   | 0xf1 -> Some `Dash_tx
   | 0xfa -> Some `Swarm_manifest
@@ -1752,11 +1852,14 @@ let of_code : int -> t option = function
   | 0x0113 -> Some `P2p_webrtc_star
   | 0x0114 -> Some `P2p_webrtc_direct
   | 0x0115 -> Some `P2p_stardust
-  | 0x0118 -> Some `Webrtc
+  | 0x0118 -> Some `Webrtc_direct
+  | 0x0119 -> Some `Webrtc
   | 0x0122 -> Some `P2p_circuit
   | 0x0129 -> Some `Dag_json
   | 0x012d -> Some `Udt
   | 0x012e -> Some `Utp
+  | 0x0132 -> Some `Crc32
+  | 0x0164 -> Some `Crc64_ecma
   | 0x0190 -> Some `Unix
   | 0x0196 -> Some `Thread
   | 0x01a5 -> Some `P2p
@@ -1768,7 +1871,9 @@ let of_code : int -> t option = function
   | 0x01c0 -> Some `Tls
   | 0x01c1 -> Some `Sni
   | 0x01c6 -> Some `Noise
+  | 0x01c8 -> Some `Shs
   | 0x01cc -> Some `Quic
+  | 0x01cd -> Some `Quic_v1
   | 0x01d1 -> Some `Webtransport
   | 0x01d2 -> Some `Certhash
   | 0x01dd -> Some `Ws
@@ -1779,6 +1884,7 @@ let of_code : int -> t option = function
   | 0x0200 -> Some `Json
   | 0x0201 -> Some `Messagepack
   | 0x0202 -> Some `Car
+  | 0x0300 -> Some `Ipns_record
   | 0x0301 -> Some `Libp2p_peer_record
   | 0x0302 -> Some `Libp2p_relay_rsvp
   | 0x0309 -> Some `Memorytransport
@@ -1786,6 +1892,8 @@ let of_code : int -> t option = function
   | 0x0401 -> Some `Car_multihash_index_sorted
   | 0x0900 -> Some `Transport_bitswap
   | 0x0910 -> Some `Transport_graphsync_filecoinv1
+  | 0x0920 -> Some `Transport_ipfs_gateway_http
+  | 0x0d1d -> Some `Multidid
   | 0x1012 -> Some `Sha2_256_trunc254_padded
   | 0x1013 -> Some `Sha2_224
   | 0x1014 -> Some `Sha2_512_224
@@ -1806,10 +1914,19 @@ let of_code : int -> t option = function
   | 0x1300 -> Some `Ed25519_priv
   | 0x1301 -> Some `Secp256k1_priv
   | 0x1302 -> Some `X25519_priv
+  | 0x1303 -> Some `Sr25519_priv
   | 0x1305 -> Some `Rsa_priv
+  | 0x1306 -> Some `P256_priv
+  | 0x1307 -> Some `P384_priv
+  | 0x1308 -> Some `P521_priv
+  | 0x1309 -> Some `Bls12_381_g1_priv
+  | 0x130a -> Some `Bls12_381_g2_priv
+  | 0x130b -> Some `Bls12_381_g1g2_priv
   | 0x1d01 -> Some `Kangarootwelve
+  | 0x2000 -> Some `Aes_gcm_256
   | 0x3f42 -> Some `Silverpine
   | 0x534d -> Some `Sm3_256
+  | 0x7012 -> Some `Sha256a
   | 0xb201 -> Some `Blake2b_8
   | 0xb202 -> Some `Blake2b_16
   | 0xb203 -> Some `Blake2b_24
@@ -2130,20 +2247,25 @@ let of_code : int -> t option = function
   | 0xb3de -> Some `Skein1024_1008
   | 0xb3df -> Some `Skein1024_1016
   | 0xb3e0 -> Some `Skein1024_1024
+  | 0xb3e1 -> Some `Xxh_32
+  | 0xb3e2 -> Some `Xxh_64
+  | 0xb3e3 -> Some `Xxh3_64
+  | 0xb3e4 -> Some `Xxh3_128
   | 0xb401 -> Some `Poseidon_bls12_381_a2_fc1
   | 0xb402 -> Some `Poseidon_bls12_381_a2_fc1_sc
-  | 0xb403 -> Some `Urdca_2015_canon
+  | 0xb403 -> Some `Rdfc_1
   | 0xb501 -> Some `Ssz
   | 0xb502 -> Some `Ssz_sha2_256_bmt
   | 0xb601 -> Some `Json_jcs
   | 0xcc01 -> Some `Iscc
   | 0xce11 -> Some `Zeroxcert_imprint_256
-  | 0xd000 -> Some `Varsig
+  | 0xd000 -> Some `Nonstandard_sig
   | 0xd0e7 -> Some `Es256k
   | 0xd0ea -> Some `Bls_12381_g1_sig
   | 0xd0eb -> Some `Bls_12381_g2_sig
   | 0xd0ed -> Some `Eddsa
   | 0xd191 -> Some `Eip_191
+  | 0xeb51 -> Some `Jwk_jcs_pub
   | 0xf101 -> Some `Fil_commitment_unsealed
   | 0xf102 -> Some `Fil_commitment_sealed
   | 0x706c61 -> Some `Plaintextv2
@@ -2161,6 +2283,7 @@ let of_code : int -> t option = function
   | 0xd01201 -> Some `Es284
   | 0xd01202 -> Some `Es512
   | 0xd01205 -> Some `Rs256
+  | 0xd02000 -> Some `Scion
   | _ -> None
 
 let cid_to_string = function
@@ -2168,9 +2291,23 @@ let cid_to_string = function
   | `Cidv2 -> "cidv2"
   | `Cidv3 -> "cidv3"
 
+let encryption_to_string = function `Aes_gcm_256 -> "aes-gcm-256"
+
 let filecoin_to_string = function
   | `Fil_commitment_unsealed -> "fil-commitment-unsealed"
   | `Fil_commitment_sealed -> "fil-commitment-sealed"
+
+let hash_to_string = function
+  | `Murmur3_x64_64 -> "murmur3-x64-64"
+  | `Murmur3_32 -> "murmur3-32"
+  | `Crc32 -> "crc32"
+  | `Crc64_ecma -> "crc64-ecma"
+  | `Murmur3_x64_128 -> "murmur3-x64-128"
+  | `Sha256a -> "sha256a"
+  | `Xxh_32 -> "xxh-32"
+  | `Xxh_64 -> "xxh-64"
+  | `Xxh3_64 -> "xxh3-64"
+  | `Xxh3_128 -> "xxh3-128"
 
 let holochain_to_string = function
   | `Holochain_adr_v0 -> "holochain-adr-v0"
@@ -2204,7 +2341,7 @@ let ipld_to_string = function
   | `Eth_account_snapshot -> "eth-account-snapshot"
   | `Eth_storage_trie -> "eth-storage-trie"
   | `Eth_receipt_log_trie -> "eth-receipt-log-trie"
-  | `Eth_reciept_log -> "eth-reciept-log"
+  | `Eth_receipt_log -> "eth-receipt-log"
   | `Bitcoin_block -> "bitcoin-block"
   | `Bitcoin_tx -> "bitcoin-tx"
   | `Bitcoin_witness_commitment -> "bitcoin-witness-commitment"
@@ -2222,7 +2359,7 @@ let ipld_to_string = function
   | `Dag_json -> "dag-json"
   | `Swhid_1_snp -> "swhid-1-snp"
   | `Json -> "json"
-  | `Urdca_2015_canon -> "urdca-2015-canon"
+  | `Rdfc_1 -> "rdfc-1"
   | `Json_jcs -> "json-jcs"
 
 let key_to_string = function
@@ -2237,6 +2374,7 @@ let key_to_string = function
   | `X25519_pub -> "x25519-pub"
   | `Ed25519_pub -> "ed25519-pub"
   | `Bls12_381_g1g2_pub -> "bls12_381-g1g2-pub"
+  | `Sr25519_pub -> "sr25519-pub"
   | `P256_pub -> "p256-pub"
   | `P384_pub -> "p384-pub"
   | `P521_pub -> "p521-pub"
@@ -2247,7 +2385,15 @@ let key_to_string = function
   | `Ed25519_priv -> "ed25519-priv"
   | `Secp256k1_priv -> "secp256k1-priv"
   | `X25519_priv -> "x25519-priv"
+  | `Sr25519_priv -> "sr25519-priv"
   | `Rsa_priv -> "rsa-priv"
+  | `P256_priv -> "p256-priv"
+  | `P384_priv -> "p384-priv"
+  | `P521_priv -> "p521-priv"
+  | `Bls12_381_g1_priv -> "bls12_381-g1-priv"
+  | `Bls12_381_g2_priv -> "bls12_381-g2-priv"
+  | `Bls12_381_g1g2_priv -> "bls12_381-g1g2-priv"
+  | `Jwk_jcs_pub -> "jwk_jcs-pub"
 
 let libp2p_to_string = function
   | `Libp2p_peer_record -> "libp2p-peer-record"
@@ -2270,6 +2416,7 @@ let multiaddr_to_string = function
   | `P2p_webrtc_star -> "p2p-webrtc-star"
   | `P2p_webrtc_direct -> "p2p-webrtc-direct"
   | `P2p_stardust -> "p2p-stardust"
+  | `Webrtc_direct -> "webrtc-direct"
   | `Webrtc -> "webrtc"
   | `P2p_circuit -> "p2p-circuit"
   | `Udt -> "udt"
@@ -2285,7 +2432,9 @@ let multiaddr_to_string = function
   | `Tls -> "tls"
   | `Sni -> "sni"
   | `Noise -> "noise"
+  | `Shs -> "shs"
   | `Quic -> "quic"
+  | `Quic_v1 -> "quic-v1"
   | `Webtransport -> "webtransport"
   | `Certhash -> "certhash"
   | `Ws -> "ws"
@@ -2294,13 +2443,16 @@ let multiaddr_to_string = function
   | `Http -> "http"
   | `Silverpine -> "silverpine"
   | `Plaintextv2 -> "plaintextv2"
+  | `Scion -> "scion"
 
 let multiformat_to_string = function
   | `Multicodec -> "multicodec"
   | `Multihash -> "multihash"
   | `Multiaddr -> "multiaddr"
   | `Multibase -> "multibase"
+  | `Varsig -> "varsig"
   | `Caip_50 -> "caip-50"
+  | `Multidid -> "multidid"
 
 let multihash_to_string = function
   | `Identity -> "identity"
@@ -2319,8 +2471,6 @@ let multihash_to_string = function
   | `Keccak_512 -> "keccak-512"
   | `Blake3 -> "blake3"
   | `Sha2_384 -> "sha2-384"
-  | `Murmur3_x64_64 -> "murmur3-x64-64"
-  | `Murmur3_32 -> "murmur3-32"
   | `Dbl_sha2_256 -> "dbl-sha2-256"
   | `Md4 -> "md4"
   | `Md5 -> "md5"
@@ -2328,7 +2478,6 @@ let multihash_to_string = function
   | `Sha2_224 -> "sha2-224"
   | `Sha2_512_224 -> "sha2-512-224"
   | `Sha2_512_256 -> "sha2-512-256"
-  | `Murmur3_x64_128 -> "murmur3-x64-128"
   | `Ripemd_128 -> "ripemd-128"
   | `Ripemd_160 -> "ripemd-160"
   | `Ripemd_256 -> "ripemd-256"
@@ -2662,6 +2811,7 @@ let multihash_to_string = function
 
 let namespace_to_string = function
   | `Path -> "path"
+  | `Lbry -> "lbry"
   | `Streamid -> "streamid"
   | `Ipld -> "ipld"
   | `Swarm -> "swarm"
@@ -2679,6 +2829,7 @@ let serialization_to_string = function
   | `Bencode -> "bencode"
   | `Messagepack -> "messagepack"
   | `Car -> "car"
+  | `Ipns_record -> "ipns-record"
   | `Car_index_sorted -> "car-index-sorted"
   | `Car_multihash_index_sorted -> "car-multihash-index-sorted"
   | `Ssz -> "ssz"
@@ -2688,9 +2839,10 @@ let softhash_to_string = function `Iscc -> "iscc"
 let transport_to_string = function
   | `Transport_bitswap -> "transport-bitswap"
   | `Transport_graphsync_filecoinv1 -> "transport-graphsync-filecoinv1"
+  | `Transport_ipfs_gateway_http -> "transport-ipfs-gateway-http"
 
 let varsig_to_string = function
-  | `Varsig -> "varsig"
+  | `Nonstandard_sig -> "nonstandard-sig"
   | `Es256k -> "es256k"
   | `Bls_12381_g1_sig -> "bls-12381-g1-sig"
   | `Bls_12381_g2_sig -> "bls-12381-g2-sig"
@@ -2737,6 +2889,7 @@ let to_string : t -> string = function
   | `Multihash -> "multihash"
   | `Multiaddr -> "multiaddr"
   | `Multibase -> "multibase"
+  | `Varsig -> "varsig"
   | `Dns -> "dns"
   | `Dns4 -> "dns4"
   | `Dns6 -> "dns6"
@@ -2759,6 +2912,7 @@ let to_string : t -> string = function
   | `Sctp -> "sctp"
   | `Dag_jose -> "dag-jose"
   | `Dag_cose -> "dag-cose"
+  | `Lbry -> "lbry"
   | `Eth_block -> "eth-block"
   | `Eth_block_list -> "eth-block-list"
   | `Eth_tx_trie -> "eth-tx-trie"
@@ -2769,7 +2923,7 @@ let to_string : t -> string = function
   | `Eth_account_snapshot -> "eth-account-snapshot"
   | `Eth_storage_trie -> "eth-storage-trie"
   | `Eth_receipt_log_trie -> "eth-receipt-log-trie"
-  | `Eth_reciept_log -> "eth-reciept-log"
+  | `Eth_receipt_log -> "eth-receipt-log"
   | `Aes_128 -> "aes-128"
   | `Aes_192 -> "aes-192"
   | `Aes_256 -> "aes-256"
@@ -2799,6 +2953,7 @@ let to_string : t -> string = function
   | `X25519_pub -> "x25519-pub"
   | `Ed25519_pub -> "ed25519-pub"
   | `Bls12_381_g1g2_pub -> "bls12_381-g1g2-pub"
+  | `Sr25519_pub -> "sr25519-pub"
   | `Dash_block -> "dash-block"
   | `Dash_tx -> "dash-tx"
   | `Swarm_manifest -> "swarm-manifest"
@@ -2808,11 +2963,14 @@ let to_string : t -> string = function
   | `P2p_webrtc_star -> "p2p-webrtc-star"
   | `P2p_webrtc_direct -> "p2p-webrtc-direct"
   | `P2p_stardust -> "p2p-stardust"
+  | `Webrtc_direct -> "webrtc-direct"
   | `Webrtc -> "webrtc"
   | `P2p_circuit -> "p2p-circuit"
   | `Dag_json -> "dag-json"
   | `Udt -> "udt"
   | `Utp -> "utp"
+  | `Crc32 -> "crc32"
+  | `Crc64_ecma -> "crc64-ecma"
   | `Unix -> "unix"
   | `Thread -> "thread"
   | `P2p -> "p2p"
@@ -2824,7 +2982,9 @@ let to_string : t -> string = function
   | `Tls -> "tls"
   | `Sni -> "sni"
   | `Noise -> "noise"
+  | `Shs -> "shs"
   | `Quic -> "quic"
+  | `Quic_v1 -> "quic-v1"
   | `Webtransport -> "webtransport"
   | `Certhash -> "certhash"
   | `Ws -> "ws"
@@ -2835,6 +2995,7 @@ let to_string : t -> string = function
   | `Json -> "json"
   | `Messagepack -> "messagepack"
   | `Car -> "car"
+  | `Ipns_record -> "ipns-record"
   | `Libp2p_peer_record -> "libp2p-peer-record"
   | `Libp2p_relay_rsvp -> "libp2p-relay-rsvp"
   | `Memorytransport -> "memorytransport"
@@ -2842,6 +3003,8 @@ let to_string : t -> string = function
   | `Car_multihash_index_sorted -> "car-multihash-index-sorted"
   | `Transport_bitswap -> "transport-bitswap"
   | `Transport_graphsync_filecoinv1 -> "transport-graphsync-filecoinv1"
+  | `Transport_ipfs_gateway_http -> "transport-ipfs-gateway-http"
+  | `Multidid -> "multidid"
   | `Sha2_256_trunc254_padded -> "sha2-256-trunc254-padded"
   | `Sha2_224 -> "sha2-224"
   | `Sha2_512_224 -> "sha2-512-224"
@@ -2862,10 +3025,19 @@ let to_string : t -> string = function
   | `Ed25519_priv -> "ed25519-priv"
   | `Secp256k1_priv -> "secp256k1-priv"
   | `X25519_priv -> "x25519-priv"
+  | `Sr25519_priv -> "sr25519-priv"
   | `Rsa_priv -> "rsa-priv"
+  | `P256_priv -> "p256-priv"
+  | `P384_priv -> "p384-priv"
+  | `P521_priv -> "p521-priv"
+  | `Bls12_381_g1_priv -> "bls12_381-g1-priv"
+  | `Bls12_381_g2_priv -> "bls12_381-g2-priv"
+  | `Bls12_381_g1g2_priv -> "bls12_381-g1g2-priv"
   | `Kangarootwelve -> "kangarootwelve"
+  | `Aes_gcm_256 -> "aes-gcm-256"
   | `Silverpine -> "silverpine"
   | `Sm3_256 -> "sm3-256"
+  | `Sha256a -> "sha256a"
   | `Blake2b_8 -> "blake2b-8"
   | `Blake2b_16 -> "blake2b-16"
   | `Blake2b_24 -> "blake2b-24"
@@ -3186,20 +3358,25 @@ let to_string : t -> string = function
   | `Skein1024_1008 -> "skein1024-1008"
   | `Skein1024_1016 -> "skein1024-1016"
   | `Skein1024_1024 -> "skein1024-1024"
+  | `Xxh_32 -> "xxh-32"
+  | `Xxh_64 -> "xxh-64"
+  | `Xxh3_64 -> "xxh3-64"
+  | `Xxh3_128 -> "xxh3-128"
   | `Poseidon_bls12_381_a2_fc1 -> "poseidon-bls12_381-a2-fc1"
   | `Poseidon_bls12_381_a2_fc1_sc -> "poseidon-bls12_381-a2-fc1-sc"
-  | `Urdca_2015_canon -> "urdca-2015-canon"
+  | `Rdfc_1 -> "rdfc-1"
   | `Ssz -> "ssz"
   | `Ssz_sha2_256_bmt -> "ssz-sha2-256-bmt"
   | `Json_jcs -> "json-jcs"
   | `Iscc -> "iscc"
   | `Zeroxcert_imprint_256 -> "zeroxcert-imprint-256"
-  | `Varsig -> "varsig"
+  | `Nonstandard_sig -> "nonstandard-sig"
   | `Es256k -> "es256k"
   | `Bls_12381_g1_sig -> "bls-12381-g1-sig"
   | `Bls_12381_g2_sig -> "bls-12381-g2-sig"
   | `Eddsa -> "eddsa"
   | `Eip_191 -> "eip-191"
+  | `Jwk_jcs_pub -> "jwk_jcs-pub"
   | `Fil_commitment_unsealed -> "fil-commitment-unsealed"
   | `Fil_commitment_sealed -> "fil-commitment-sealed"
   | `Plaintextv2 -> "plaintextv2"
@@ -3217,6 +3394,7 @@ let to_string : t -> string = function
   | `Es284 -> "es284"
   | `Es512 -> "es512"
   | `Rs256 -> "rs256"
+  | `Scion -> "scion"
 
 let cid_of_string = function
   | "cidv1" -> Some `Cidv1
@@ -3224,9 +3402,26 @@ let cid_of_string = function
   | "cidv3" -> Some `Cidv3
   | _ -> None
 
+let encryption_of_string = function
+  | "aes-gcm-256" -> Some `Aes_gcm_256
+  | _ -> None
+
 let filecoin_of_string = function
   | "fil-commitment-unsealed" -> Some `Fil_commitment_unsealed
   | "fil-commitment-sealed" -> Some `Fil_commitment_sealed
+  | _ -> None
+
+let hash_of_string = function
+  | "murmur3-x64-64" -> Some `Murmur3_x64_64
+  | "murmur3-32" -> Some `Murmur3_32
+  | "crc32" -> Some `Crc32
+  | "crc64-ecma" -> Some `Crc64_ecma
+  | "murmur3-x64-128" -> Some `Murmur3_x64_128
+  | "sha256a" -> Some `Sha256a
+  | "xxh-32" -> Some `Xxh_32
+  | "xxh-64" -> Some `Xxh_64
+  | "xxh3-64" -> Some `Xxh3_64
+  | "xxh3-128" -> Some `Xxh3_128
   | _ -> None
 
 let holochain_of_string = function
@@ -3262,7 +3457,7 @@ let ipld_of_string = function
   | "eth-account-snapshot" -> Some `Eth_account_snapshot
   | "eth-storage-trie" -> Some `Eth_storage_trie
   | "eth-receipt-log-trie" -> Some `Eth_receipt_log_trie
-  | "eth-reciept-log" -> Some `Eth_reciept_log
+  | "eth-receipt-log" -> Some `Eth_receipt_log
   | "bitcoin-block" -> Some `Bitcoin_block
   | "bitcoin-tx" -> Some `Bitcoin_tx
   | "bitcoin-witness-commitment" -> Some `Bitcoin_witness_commitment
@@ -3280,7 +3475,7 @@ let ipld_of_string = function
   | "dag-json" -> Some `Dag_json
   | "swhid-1-snp" -> Some `Swhid_1_snp
   | "json" -> Some `Json
-  | "urdca-2015-canon" -> Some `Urdca_2015_canon
+  | "rdfc-1" -> Some `Rdfc_1
   | "json-jcs" -> Some `Json_jcs
   | _ -> None
 
@@ -3296,6 +3491,7 @@ let key_of_string = function
   | "x25519-pub" -> Some `X25519_pub
   | "ed25519-pub" -> Some `Ed25519_pub
   | "bls12_381-g1g2-pub" -> Some `Bls12_381_g1g2_pub
+  | "sr25519-pub" -> Some `Sr25519_pub
   | "p256-pub" -> Some `P256_pub
   | "p384-pub" -> Some `P384_pub
   | "p521-pub" -> Some `P521_pub
@@ -3306,7 +3502,15 @@ let key_of_string = function
   | "ed25519-priv" -> Some `Ed25519_priv
   | "secp256k1-priv" -> Some `Secp256k1_priv
   | "x25519-priv" -> Some `X25519_priv
+  | "sr25519-priv" -> Some `Sr25519_priv
   | "rsa-priv" -> Some `Rsa_priv
+  | "p256-priv" -> Some `P256_priv
+  | "p384-priv" -> Some `P384_priv
+  | "p521-priv" -> Some `P521_priv
+  | "bls12_381-g1-priv" -> Some `Bls12_381_g1_priv
+  | "bls12_381-g2-priv" -> Some `Bls12_381_g2_priv
+  | "bls12_381-g1g2-priv" -> Some `Bls12_381_g1g2_priv
+  | "jwk_jcs-pub" -> Some `Jwk_jcs_pub
   | _ -> None
 
 let libp2p_of_string = function
@@ -3331,6 +3535,7 @@ let multiaddr_of_string = function
   | "p2p-webrtc-star" -> Some `P2p_webrtc_star
   | "p2p-webrtc-direct" -> Some `P2p_webrtc_direct
   | "p2p-stardust" -> Some `P2p_stardust
+  | "webrtc-direct" -> Some `Webrtc_direct
   | "webrtc" -> Some `Webrtc
   | "p2p-circuit" -> Some `P2p_circuit
   | "udt" -> Some `Udt
@@ -3346,7 +3551,9 @@ let multiaddr_of_string = function
   | "tls" -> Some `Tls
   | "sni" -> Some `Sni
   | "noise" -> Some `Noise
+  | "shs" -> Some `Shs
   | "quic" -> Some `Quic
+  | "quic-v1" -> Some `Quic_v1
   | "webtransport" -> Some `Webtransport
   | "certhash" -> Some `Certhash
   | "ws" -> Some `Ws
@@ -3355,6 +3562,7 @@ let multiaddr_of_string = function
   | "http" -> Some `Http
   | "silverpine" -> Some `Silverpine
   | "plaintextv2" -> Some `Plaintextv2
+  | "scion" -> Some `Scion
   | _ -> None
 
 let multiformat_of_string = function
@@ -3362,7 +3570,9 @@ let multiformat_of_string = function
   | "multihash" -> Some `Multihash
   | "multiaddr" -> Some `Multiaddr
   | "multibase" -> Some `Multibase
+  | "varsig" -> Some `Varsig
   | "caip-50" -> Some `Caip_50
+  | "multidid" -> Some `Multidid
   | _ -> None
 
 let multihash_of_string = function
@@ -3382,8 +3592,6 @@ let multihash_of_string = function
   | "keccak-512" -> Some `Keccak_512
   | "blake3" -> Some `Blake3
   | "sha2-384" -> Some `Sha2_384
-  | "murmur3-x64-64" -> Some `Murmur3_x64_64
-  | "murmur3-32" -> Some `Murmur3_32
   | "dbl-sha2-256" -> Some `Dbl_sha2_256
   | "md4" -> Some `Md4
   | "md5" -> Some `Md5
@@ -3391,7 +3599,6 @@ let multihash_of_string = function
   | "sha2-224" -> Some `Sha2_224
   | "sha2-512-224" -> Some `Sha2_512_224
   | "sha2-512-256" -> Some `Sha2_512_256
-  | "murmur3-x64-128" -> Some `Murmur3_x64_128
   | "ripemd-128" -> Some `Ripemd_128
   | "ripemd-160" -> Some `Ripemd_160
   | "ripemd-256" -> Some `Ripemd_256
@@ -3726,6 +3933,7 @@ let multihash_of_string = function
 
 let namespace_of_string = function
   | "path" -> Some `Path
+  | "lbry" -> Some `Lbry
   | "streamid" -> Some `Streamid
   | "ipld" -> Some `Ipld
   | "swarm" -> Some `Swarm
@@ -3744,6 +3952,7 @@ let serialization_of_string = function
   | "bencode" -> Some `Bencode
   | "messagepack" -> Some `Messagepack
   | "car" -> Some `Car
+  | "ipns-record" -> Some `Ipns_record
   | "car-index-sorted" -> Some `Car_index_sorted
   | "car-multihash-index-sorted" -> Some `Car_multihash_index_sorted
   | "ssz" -> Some `Ssz
@@ -3754,10 +3963,11 @@ let softhash_of_string = function "iscc" -> Some `Iscc | _ -> None
 let transport_of_string = function
   | "transport-bitswap" -> Some `Transport_bitswap
   | "transport-graphsync-filecoinv1" -> Some `Transport_graphsync_filecoinv1
+  | "transport-ipfs-gateway-http" -> Some `Transport_ipfs_gateway_http
   | _ -> None
 
 let varsig_of_string = function
-  | "varsig" -> Some `Varsig
+  | "nonstandard-sig" -> Some `Nonstandard_sig
   | "es256k" -> Some `Es256k
   | "bls-12381-g1-sig" -> Some `Bls_12381_g1_sig
   | "bls-12381-g2-sig" -> Some `Bls_12381_g2_sig
@@ -3806,6 +4016,7 @@ let of_string : string -> t option = function
   | "multihash" -> Some `Multihash
   | "multiaddr" -> Some `Multiaddr
   | "multibase" -> Some `Multibase
+  | "varsig" -> Some `Varsig
   | "dns" -> Some `Dns
   | "dns4" -> Some `Dns4
   | "dns6" -> Some `Dns6
@@ -3828,6 +4039,7 @@ let of_string : string -> t option = function
   | "sctp" -> Some `Sctp
   | "dag-jose" -> Some `Dag_jose
   | "dag-cose" -> Some `Dag_cose
+  | "lbry" -> Some `Lbry
   | "eth-block" -> Some `Eth_block
   | "eth-block-list" -> Some `Eth_block_list
   | "eth-tx-trie" -> Some `Eth_tx_trie
@@ -3838,7 +4050,7 @@ let of_string : string -> t option = function
   | "eth-account-snapshot" -> Some `Eth_account_snapshot
   | "eth-storage-trie" -> Some `Eth_storage_trie
   | "eth-receipt-log-trie" -> Some `Eth_receipt_log_trie
-  | "eth-reciept-log" -> Some `Eth_reciept_log
+  | "eth-receipt-log" -> Some `Eth_receipt_log
   | "aes-128" -> Some `Aes_128
   | "aes-192" -> Some `Aes_192
   | "aes-256" -> Some `Aes_256
@@ -3868,6 +4080,7 @@ let of_string : string -> t option = function
   | "x25519-pub" -> Some `X25519_pub
   | "ed25519-pub" -> Some `Ed25519_pub
   | "bls12_381-g1g2-pub" -> Some `Bls12_381_g1g2_pub
+  | "sr25519-pub" -> Some `Sr25519_pub
   | "dash-block" -> Some `Dash_block
   | "dash-tx" -> Some `Dash_tx
   | "swarm-manifest" -> Some `Swarm_manifest
@@ -3877,11 +4090,14 @@ let of_string : string -> t option = function
   | "p2p-webrtc-star" -> Some `P2p_webrtc_star
   | "p2p-webrtc-direct" -> Some `P2p_webrtc_direct
   | "p2p-stardust" -> Some `P2p_stardust
+  | "webrtc-direct" -> Some `Webrtc_direct
   | "webrtc" -> Some `Webrtc
   | "p2p-circuit" -> Some `P2p_circuit
   | "dag-json" -> Some `Dag_json
   | "udt" -> Some `Udt
   | "utp" -> Some `Utp
+  | "crc32" -> Some `Crc32
+  | "crc64-ecma" -> Some `Crc64_ecma
   | "unix" -> Some `Unix
   | "thread" -> Some `Thread
   | "p2p" -> Some `P2p
@@ -3893,7 +4109,9 @@ let of_string : string -> t option = function
   | "tls" -> Some `Tls
   | "sni" -> Some `Sni
   | "noise" -> Some `Noise
+  | "shs" -> Some `Shs
   | "quic" -> Some `Quic
+  | "quic-v1" -> Some `Quic_v1
   | "webtransport" -> Some `Webtransport
   | "certhash" -> Some `Certhash
   | "ws" -> Some `Ws
@@ -3904,6 +4122,7 @@ let of_string : string -> t option = function
   | "json" -> Some `Json
   | "messagepack" -> Some `Messagepack
   | "car" -> Some `Car
+  | "ipns-record" -> Some `Ipns_record
   | "libp2p-peer-record" -> Some `Libp2p_peer_record
   | "libp2p-relay-rsvp" -> Some `Libp2p_relay_rsvp
   | "memorytransport" -> Some `Memorytransport
@@ -3911,6 +4130,8 @@ let of_string : string -> t option = function
   | "car-multihash-index-sorted" -> Some `Car_multihash_index_sorted
   | "transport-bitswap" -> Some `Transport_bitswap
   | "transport-graphsync-filecoinv1" -> Some `Transport_graphsync_filecoinv1
+  | "transport-ipfs-gateway-http" -> Some `Transport_ipfs_gateway_http
+  | "multidid" -> Some `Multidid
   | "sha2-256-trunc254-padded" -> Some `Sha2_256_trunc254_padded
   | "sha2-224" -> Some `Sha2_224
   | "sha2-512-224" -> Some `Sha2_512_224
@@ -3931,10 +4152,19 @@ let of_string : string -> t option = function
   | "ed25519-priv" -> Some `Ed25519_priv
   | "secp256k1-priv" -> Some `Secp256k1_priv
   | "x25519-priv" -> Some `X25519_priv
+  | "sr25519-priv" -> Some `Sr25519_priv
   | "rsa-priv" -> Some `Rsa_priv
+  | "p256-priv" -> Some `P256_priv
+  | "p384-priv" -> Some `P384_priv
+  | "p521-priv" -> Some `P521_priv
+  | "bls12_381-g1-priv" -> Some `Bls12_381_g1_priv
+  | "bls12_381-g2-priv" -> Some `Bls12_381_g2_priv
+  | "bls12_381-g1g2-priv" -> Some `Bls12_381_g1g2_priv
   | "kangarootwelve" -> Some `Kangarootwelve
+  | "aes-gcm-256" -> Some `Aes_gcm_256
   | "silverpine" -> Some `Silverpine
   | "sm3-256" -> Some `Sm3_256
+  | "sha256a" -> Some `Sha256a
   | "blake2b-8" -> Some `Blake2b_8
   | "blake2b-16" -> Some `Blake2b_16
   | "blake2b-24" -> Some `Blake2b_24
@@ -4255,20 +4485,25 @@ let of_string : string -> t option = function
   | "skein1024-1008" -> Some `Skein1024_1008
   | "skein1024-1016" -> Some `Skein1024_1016
   | "skein1024-1024" -> Some `Skein1024_1024
+  | "xxh-32" -> Some `Xxh_32
+  | "xxh-64" -> Some `Xxh_64
+  | "xxh3-64" -> Some `Xxh3_64
+  | "xxh3-128" -> Some `Xxh3_128
   | "poseidon-bls12_381-a2-fc1" -> Some `Poseidon_bls12_381_a2_fc1
   | "poseidon-bls12_381-a2-fc1-sc" -> Some `Poseidon_bls12_381_a2_fc1_sc
-  | "urdca-2015-canon" -> Some `Urdca_2015_canon
+  | "rdfc-1" -> Some `Rdfc_1
   | "ssz" -> Some `Ssz
   | "ssz-sha2-256-bmt" -> Some `Ssz_sha2_256_bmt
   | "json-jcs" -> Some `Json_jcs
   | "iscc" -> Some `Iscc
   | "zeroxcert-imprint-256" -> Some `Zeroxcert_imprint_256
-  | "varsig" -> Some `Varsig
+  | "nonstandard-sig" -> Some `Nonstandard_sig
   | "es256k" -> Some `Es256k
   | "bls-12381-g1-sig" -> Some `Bls_12381_g1_sig
   | "bls-12381-g2-sig" -> Some `Bls_12381_g2_sig
   | "eddsa" -> Some `Eddsa
   | "eip-191" -> Some `Eip_191
+  | "jwk_jcs-pub" -> Some `Jwk_jcs_pub
   | "fil-commitment-unsealed" -> Some `Fil_commitment_unsealed
   | "fil-commitment-sealed" -> Some `Fil_commitment_sealed
   | "plaintextv2" -> Some `Plaintextv2
@@ -4286,4 +4521,5 @@ let of_string : string -> t option = function
   | "es284" -> Some `Es284
   | "es512" -> Some `Es512
   | "rs256" -> Some `Rs256
+  | "scion" -> Some `Scion
   | _ -> None
